@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		33CDD3C0243B76420064F646 /* DocumentInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDD3BF243B76420064F646 /* DocumentInfoViewController.swift */; };
 		5786A2B72434C9FF004C9DC9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5786A2B62434C9FF004C9DC9 /* AppDelegate.swift */; };
 		5786A2C02434C9FF004C9DC9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5786A2BE2434C9FF004C9DC9 /* Main.storyboard */; };
 		5786A2C22434CA07004C9DC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5786A2C12434CA07004C9DC9 /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		33CDD3BF243B76420064F646 /* DocumentInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentInfoViewController.swift; sourceTree = "<group>"; };
 		5786A2B32434C9FF004C9DC9 /* EmojiArt-Document.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EmojiArt-Document.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5786A2B62434C9FF004C9DC9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5786A2BF2434C9FF004C9DC9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				5786A2BE2434C9FF004C9DC9 /* Main.storyboard */,
+				33CDD3BF243B76420064F646 /* DocumentInfoViewController.swift */,
 				5786A2D12434CC92004C9DC9 /* DocumentBrowserViewController.swift */,
 				5786A2CF2434CC91004C9DC9 /* EmojiArt.swift */,
 				5786A2CE2434CC91004C9DC9 /* EmojiArtDocument.swift */,
@@ -168,6 +171,7 @@
 				5786A2DA2434CCA3004C9DC9 /* TextFieldCollectionViewCell.swift in Sources */,
 				5786A2D52434CC92004C9DC9 /* EmojiArtViewController.swift in Sources */,
 				5786A2B72434C9FF004C9DC9 /* AppDelegate.swift in Sources */,
+				33CDD3C0243B76420064F646 /* DocumentInfoViewController.swift in Sources */,
 				5786A2D32434CC92004C9DC9 /* EmojiArtDocument.swift in Sources */,
 				5786A2D62434CC92004C9DC9 /* DocumentBrowserViewController.swift in Sources */,
 				5786A2DB2434CCA3004C9DC9 /* Utilities.swift in Sources */,

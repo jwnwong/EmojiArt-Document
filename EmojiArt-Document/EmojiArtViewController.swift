@@ -23,7 +23,41 @@ extension EmojiArt.EmojiInfo {
 }
 
 
-class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, UIPopoverPresentationControllerDelegate {
+    
+    // MARK: - Navigation
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "Show Document Info" {
+            if let destination = segue.destination.contents as? DocumentInfoViewController {
+                document?.thumbnail = emojiArtView.snapshot
+                destination.document = document
+                
+                if let ppc = destination.presentationController {
+                    ppc.delegate = self
+                }
+                
+            }
+        } else if segue.identifier == "Embed Document Info" {
+            embeddedDocInfo = segue.destination.contents as? DocumentInfoViewController
+        }
+    }
+    
+    private var embeddedDocInfo: DocumentInfoViewController?
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
+        // For Iphone presentation to avoid showing black screen
+    }
+    
+    @IBAction func close(bySegue: UIStoryboardSegue) {
+        close()
+    }
+    
+    @IBOutlet weak var embeddedDocInfoWidth: NSLayoutConstraint!
+    @IBOutlet weak var embeddedDocInfoHeight: NSLayoutConstraint!
+    
+    
     
     // MARK: -  Model
     var emojiArt: EmojiArt? {
@@ -53,47 +87,66 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
     
     var document: EmojiArtDocument?
     
-    @IBAction func save(_ sender: UIBarButtonItem? = nil) {
+    func docuemntChanged(_ sender: UIBarButtonItem? = nil) {
         document?.emojiArt = emojiArt
         if document?.emojiArt != nil {
             document?.updateChangeCount(.done)
             print("Performed save()")
         }
-//        if let json = emojiArt?.json {
-//            if let url = try? FileManager.default.url(
-//                    for: .documentDirectory, in: .userDomainMask,
-//                    appropriateFor: nil, create: true)
-//                    .appendingPathComponent("Untitled.json") {
-//                    do {
-//                        try json.write(to:url)
-//                        print("save successfully!")
-//                    } catch let error {
-//                        print("couldn't save \(error)")
-//                    }
-//
-//             }
-//        }
     }
     
-    @IBAction func close(_ sender: UIBarButtonItem) {
-        save()
+    @IBAction func close(_ sender: UIBarButtonItem? = nil) {
+        if let observer = emojiArtViewObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        
         if document?.emojiArt != nil {
             document?.thumbnail = emojiArtView.snapshot
         }
-        dismiss(animated: true) {
-            self.document?.close()
+        
+        presentingViewController?.dismiss(animated: true) {
+            self.document?.close() { success in
+                if let observer = self.documentObserver {
+                    NotificationCenter.default.removeObserver(observer)
+                }
+            }
         }
         
     }
     
+    var emojiArtViewObserver: NSObjectProtocol?
+    var documentObserver: NSObjectProtocol?
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        documentObserver = NotificationCenter.default.addObserver(
+            forName: UIDocument.stateChangedNotification,
+            object: document,
+            queue: .main,
+            using: { notification in
+                print("documentSate changed to \(self.document!.documentState)")
+                if self.document!.documentState == .normal, let docInfoVC = self.embeddedDocInfo {
+                    docInfoVC.document = self.document
+                    self.embeddedDocInfoWidth.constant = docInfoVC.preferredContentSize.width
+                    self.embeddedDocInfoHeight.constant = docInfoVC.preferredContentSize.height
+                }
+        })
+        
         
         document?.open { success in
             if success {
                 print("viewWillAppear opened the document...")
                 self.title = self.document?.localizedName
                 self.emojiArt = self.document?.emojiArt
+                self.emojiArtViewObserver = NotificationCenter.default.addObserver(
+                    forName: .EmojiArtViewDidChange,
+                    object: self.emojiArtView,
+                    queue: .main,
+                    using: { notification in
+                        print("Notification: EmojiArtViewDidChange trigger documentChange()")
+                        self.docuemntChanged()
+                })
             }
         }
         
@@ -334,6 +387,7 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
         imageFetcher = ImageFetcher() { (url,image) in
             DispatchQueue.main.async {
                 self.emojiArtBackgroundImage = (url,image)
+                self.docuemntChanged()
             }
         }
         
@@ -344,6 +398,7 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
         }
         session.loadObjects(ofClass: UIImage.self) { images in
             if let image = images.first as? UIImage {
+                // Just in case the fetch fails, use the image drop by the drag
                 self.imageFetcher.backup = image
             }
         }

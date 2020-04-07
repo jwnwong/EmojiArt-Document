@@ -66,14 +66,9 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         let documentVC = storyBoard.instantiateViewController(withIdentifier: "DocumentMVC")
         if let emojiArtViewController = documentVC.contents as? EmojiArtViewController {
             emojiArtViewController.document = EmojiArtDocument(fileURL: documentURL)
-    //        emojiArtViewController.modalPresentationStyle = .overFullScreen
         }
         present(documentVC, animated: true)
-        //        let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! DocumentViewController
-//        documentViewController.document = EmojiArtDocument(fileURL: documentURL)
-//        documentViewController.modalPresentationStyle = .fullScreen
-//
-//        present(documentViewController, animated: true, completion: nil)
+     
     }
 }
 
